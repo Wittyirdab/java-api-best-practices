@@ -1,10 +1,12 @@
 # Java API Best Practices
 
+> Note: This is a draft text for an upcoming DZone refcard. If you have any feedback, please file an issue or a pull request. The target document size is between 3000 and 4000 words, but at present this document is around about 4800 words. If you have suggestions on the least important content, please let me know.
+
 ## Introduction
 
 As engineers we write code every day, and it is inconceivable that this code would ever exist in a vacuum, isolated from all other software ever written. Never has the 'standing on the shoulders of giants' metaphor been more apt than it is today in software engineering, with GitHub, Stack Overflow, Maven Central, and all other directories of code, support, and software libraries available at our fingertips.
 
-Software is built from Application Programming Interfaces (APIs) - we make use of the JDK, and numerous dependencies brought in from tools such as Maven or Gradle, on a daily basis. If you were to ask a room full of software engineers if they were API developers, their response is usually that no, they are not. This is incorrect! Anyone who has ever crafted a public class or public method should consider themselves an API developer. The term 'crafting' is used deliberately here. Too often software engineering gets wrapped up in the formality of engineering, but API design is as much, if not moreso, an art form that requires creativity and a gut feeling to be developed over many years.
+Software is built from Application Programming Interfaces (APIs) - we make use of the JDK, and numerous dependencies brought in from tools such as Maven or Gradle, on a daily basis. If you were to ask a room full of software engineers if they were API developers, their response is usually that no, they are not. This is incorrect! Anyone who has ever crafted a public class or public method should consider themselves an API developer. The term 'crafting' is used deliberately here. Too often software engineering gets wrapped up in the formality of engineering, but API design is as much, if not moreso, an art form that requires creativity and a gut feeling to be developed over many years, rather than an exact science.
 
 API design has had numerous books dedicated to it. This refcard, out of necessity, will cover far less than this, but it will hopefully give readers a chance to consider ways in which their software development skills can be improved through considered API design.
 
@@ -12,12 +14,41 @@ API design has had numerous books dedicated to it. This refcard, out of necessit
 
 There are many criteria through which an API can be characterized, six of which are introduced below, and which form the threads that we will cover in more depth throughout this refcard.
 
-* **Understandable:** How often as an engineer have you downloaded a library as a Maven dependency, and then wondered which class gets you started with using the API? An API should not be considered successful if a developer cannot intuitively understand how to use it.
-* **Well-documented:** Because we expect others to use our APIs, we should put in the effort to document it. Our focus in this refcard is on high-quality, detailed JavaDoc content.
-* **Consistent:** A good API should not surprise its users, and one way we can fail at this is by not being consistent.
-* **Fit for purpose:** In developing an API we must ensure that we target it at the right level for the intended user.
-* **Restrained:** Creating new API can happen almost too quickly - a few taps on the keyboard - but we should remember that for every commitment, we are committing to a lifetime of support.
-* **Evolvable:** For every API decision we make, we are potentially backing ourselves into another corner. As we make API decisions, we must take the time to view them in the wider context of the future releases of the SDK.
+### 1. Understandable
+
+How often as an engineer have you downloaded a library as a Maven dependency, and then wondered which class gets you started with using the API? An API should not be considered successful if a developer cannot intuitively understand how to use it.
+
+External documentation is useful and helps developers to understand the bigger picture, but ideally, it should not be needed to learn or discover an API. Developers should give consideration to the entry points into their API. Good APIs try to expose their functionality through an obvious entry point that holds the developers hand as they make use of the primary use cases enabled by the API. More advanced functionality can then be discovered through external documentation as necessary.
+
+### 2. Well-documented
+
+Because we expect others to use our APIs, we should put in the effort to document it. Our focus in this refcard is on high-quality, detailed JavaDoc content.
+
+### 3. Consistent
+
+A good API should not surprise its users, and one way we can fail at this is by not being consistent. When we speak of consistency, we mean ensuring that we repeat the same concepts in our API, rather than introduce different concepts in an adhoc fashion. Examples include:
+
+* All of our methods should have the form `getXYZ()` or `xyz()`, but not both forms.
+* If there are two methods (one a conveience overload of the other, e.g. one taking `Object...` (that is, a var-args of `Object`) and the other taking `Collection<? extends Object>`), that overload should be available everywhere.
+
+The point here is to establish a team-wide vocabulary and 'cheat sheet' that we use to apply a veneer of consistency across our entire SDK.
+
+### 4. Fit for purpose
+
+In developing an API we must ensure that we target it at the right level for the intended user. This can be thought of in two ways:
+
+1. Do only one thing, and do it right.
+2. Understand your user and their goals.
+
+A good example might be the new date / time APIs added in JDK 8. The target user of this API is general-purpose programmers wanting to work with dates and times. They are not expert in the nuances of the various calendar systems, time zones, etc, and nor are they wanting to work purely in terms of milliseconds since the epoch. These are both valid APIs we could have, but they do not hit the mark when the needs of the user are taken into account. The new date / time APIs in JDK 8 therefore strive to strike a good balance, and do so rather successfully. In fact, the new date / time APIs in JDK 8 derive from the [Joda Time project](http://www.joda.org/joda-time/), and so had many years to evolve before hitting the JDK repos. As it was working through the process to enter the JDK, some of the more advanced functionality of the library was removed or simplified, to reduce the API surface area.
+
+### 5. Restrained
+
+Creating new API can happen almost too quickly - a few taps on the keyboard - but we should remember that for every new API, we are potentially committing to a lifetime of support. The actual cost of our API decisions depends a lot on our project and its community - some projects are happy to make breaking changes constantly, whereas others (such as the JDK itself) are eager to break as little as possible. Most projects fall in the middle ground, adopting a semantic versioning approach that carefully deprecates API before removing it in major releases only. Some projects even include various markers to indicate experimental, beta, or preview functionality that makes it available in releases for feedback, before a final API is locked down.
+
+### 6. Evolvable
+
+For every API decision we make, we are potentially backing ourselves into another corner. As we make API decisions, we must take the time to view them in the wider context of the future releases of the SDK.
 
 These six criteria have proven to be useful when considering if an API is high quality, but there are certain to be many other criteria teams can apply to their process. The main aspiration a team should have after reading this refcard is to define their own criteria through which they can judge and review their API.
 
@@ -25,11 +56,18 @@ These six criteria have proven to be useful when considering if an API is high q
 
 API has to be thought of as a contract - when we make API available to other developers, we are promising them certain functionality. It is often hard for engineers to leave their code alone, as they imagine new and better approaches (even when not working). Thinking that we should revise our API, to attempt to make it better, is to only be done after much consideration, as by doing this we risk introducing breaking changes and bugs to the developers down stream from us.
 
-Having said this, there is a time when API experimentation is the right thing to do - and that is during the journey from initial idea conception until we reach the 1.0.0 release of our API. Even if we don't need to version our APIs, as they are only to be used by ourselves, we should be cognisant of where this boundary lies, that separates 'experimentation time' from 'business time'.
+In the build up to the 1.0.0 release of our API, we should feel a sense of freedom to experiment with our APIs. In some projects, the point at which we reach 1.0.0 is the point in which our API becomes locked down (at least until the 2.0.0 release). However, in other projects, there can be more flexible with their obligations, continuting to experiment and refine their API on an ongoing basis. In fact, with a wise deprecation process, it is not too hard to evolve an API in a backwards compatible way over a long period of time, without restricting the ability to introduce better approaches.
 
 ## The Importance of Justification
 
 The easiest API to maintain is no API at all, and it is therefore extremely important to require justification for every method and class that forms part of our API. During the process of designing our APIs, we should therefore frequently find ourselves asking the following question: 'is this really required?'. We should assure ourselves that the API is paying for itself, returning vital functionality in return for its continued existence.
+
+## Eating Your Own Dogfood
+
+As API developers we have to be careful that the API we are creating is indeed useful for its stated purpose. We have to have developer empathy to look through the eyes of the developer, rather than as ourselves. The best way to be assured of this is to '[eat your own dogfood](https://en.wikipedia.org/wiki/Eating_your_own_dog_food)'. In other words, it is important to use your API in development projects as a 'first customer', so that you can spot any issues before your real users encounter them. No one can spot API shortcomings as well as the maintainer of the API, if they use the API all the time.
+
+When we write applications using our API, we should use this time to look for code that does not work cleanly (or with unclear intentions, places where there is duplicate or redundant code, and places where our API forces the developer to work at a level of abstraction that is either too low-level or too high-level.
+
 
 ## API Documentation
 
@@ -43,6 +81,12 @@ The value of JavaDoc extends beyond offering it to other developers - it can als
 
 As most Java projects are based on Maven or Gradle, generating JavaDocs for a project is typically as simple as running `mvn javadoc:javadoc` or `gradle javadoc`, respectively. Getting into the habit of generating this documentation (especially with settings configured to fail on any error or warning) on a regular basis ensures that we are always able to spot API issues early, and remind ourselves of areas of our API that need more JavaDoc content to be written.
 
+### JavaDoc for Behavioral Contracts
+
+One underutilised aspect of JavaDoc is to use it to specify behavioral contracts. An example of a behavioral contract is the `Arrays.sort()` method, which guarantees it is 'stable' (that is, equal elements are not reordered). There is no way to easily specify this guarantee as part of the API itself (aside from making our API unwieldy, e.g. `Arrays.stableSort()`), but JavaDoc is an ideal location for this. 
+
+However, if we add behavioral contracts as part of our API, this then becomes as much a part of our API as the API itself. We can not change this behavioral contract with the same level of consideration, as it will potentially cause downstream issues for your users.
+
 ### JavaDoc Tags
 
 JavaDoc ships with a [number of tags](https://docs.oracle.com/javase/8/docs/technotes/tools/windows/javadoc.html#CHDJFCCC) such as `@link`, `@param`, and `@return`, which provide more context to the JavaDoc tooling, and which therefore enables a richer experience when HTML output is generated. It is extremely useful when writing JavaDoc content to keep these in the back of your mind, to ensure that they are all used when relevant. To understand when to use each of these tags, refer to the ['Tag Comments` section](https://docs.oracle.com/javase/8/docs/technotes/tools/windows/javadoc.html#CHDJFCCC) of the Java Platform, Standard Edition Tools Reference documentation.
@@ -55,10 +99,17 @@ The short term benefit to having consistent API is that we reduce the risk of fr
 
 Some of the more important considerations around consistency include:
 
-* **Return types:** Ideally all API that must return a collection should be consistent, using only a few classes rather than all possible ones. A good subset of collections to return might be `List`, `Set`, and `Iterator` (and in this case, never `Collection`, `Iterable`, and `Stream`). Similarly, returning `null` should be avoided in a consistent fashion (this is covered further below).
-* **Method naming patterns:** Developers rely on their IDE to auto-complete their input, so consider the importance of API naming, to ensure related concepts appear adjacent to each other in the users auto-complete popup lists.
-* **Argument order:** APIs that overload methods to accept different numbers or types of arguments should always ensure that the ordering is consistent and logical.
-* **Consistent instantiation process:** Using a variation of contructor, factory, singleton, and dependency injection patterns in an API can lead to confusion for the developer. Creating an instantiation plan for an API up-front can help to mitigate this.
+### Return types
+
+Ideally all API that must return a collection should be consistent, using only a few classes rather than all possible ones. A good subset of collections to return might be, for example, `List`, `Set`, and `Iterator` (and in this case, never `Collection`, `Iterable`, and `Stream` - but note that these are all valid return types - just in this example they were chosen to not be in the subset). Relatedly, if the API takes pain to not return null in most cases (for a certain return type), it is best advised to never return null for that return type.
+
+### Method naming patterns
+
+Developers rely on their IDE to auto-complete their input, so consider the importance of API naming, to ensure related concepts appear adjacent to each other in the users auto-complete popup lists. An API should have a well established set of terms and reuse those terms all the time in: type names, method names, argument names, constants, etc. Method names like `Type.of(...)`, `Type.valueOf()`, `Type.toXYZ()`, `Type.from(...)`, etc. should be used consistently, and never mixed. Our goal is to have a team-wide vocabulary that we use throughout our API.
+
+### Argument order
+
+APIs that overload methods to accept different numbers or types of arguments should always ensure that the ordering is consistent and logical. In some cases the arguments we pass into a method form some logical grouping, and in these cases it may make sense to introduce an intermediate argument type that can wrap these arguments. This reduces the risk that subsequent releases of our API will need to overload the method to accept more arguments. This also helps to aid our goal of API evolvability.
 
 ## Minimize API
 
@@ -69,12 +120,20 @@ It is the natural instinct of an API developer to want to write as much API as t
 
 All API developers should start by understanding the critical use cases required for their API, and design their API to support these use cases. They should fight the urge to add more convenience (thinking to themselves that by adding a new method will save developers from writing a few more lines of code).
 
+Having said this, it is important to clarify that convenience APIs serve a critically important role in any good API, especially in servicing our goal of having an understandable API. The challenge is in determining what should be accepted as valuable, and what should be rejected as not having enough value to 'pay for itself'. Examples of good convenience API in the JDK include the new `List.of(..)` API to quickly create an immutable list, or, more simply, `List.add(Object)`, to avoid developers always having to call `List.add(int, Object)`.
+
 A related aspect to this is to ensure that implementation classes do not 'leak' out into public API. Appropriate measures should be taken to ensure implementation classes are hidden. There are two main approaches to doing this:
 
 1. Put implementation classes into packages under an `impl` package. All classes under this package can then be excluded from the JavaDoc output, and documented to not be part of the API for developers to use. If this API were being developed under JDK 9 or later, a module could be defined that excludes this impl package from being exported (and therfore, it will not be available to developers at all).
 2. Make implementation classes ‘package-private’ (i.e. have no modifier on the class). This means that the classes are not part of the public API, and also are not able to be used by developers.
 
 As part of excluding implementation classes from the public API, it is important that when reviewing the public API (using JavaDocs or otherwise) that developers ensure that no public API exports implementation classes through their method signatures. If this is found to be the case, we are leaking implementation details and the API should be changed to prevent this.
+
+## Understand protected
+
+The `protected` keyword in Java is often misunderstood, and perhaps, overused. There are certainly cases where it can be a very useful tool in the API developers toolkit, but unless it is designed into a class from the start, it is often used incorrectly, leading to classes that appear to be extensible, but in practice fail to be so. In fact, sometimes the protected keyword can act as a form of virus, infecting the class as users of the API demand more and more of its private methods be made protected (or public!) to enable their requirements to be met.
+
+In addition, API developers need to understand that `protected` methods form as much a part of their public API footprint as public API does. This is often misunderstood by beginner API developers, to their eventual detriment.
 
 ## Minimize Exposing External Dependencies
 
@@ -86,7 +145,7 @@ If we discover that we are exposing external dependencies in our API, we should 
 
 As an API developer, we must strike a balance between offering developers the functionality and flexibility that they need to perform their jobs, and the ability for ourselves to evolve our API over time. One way to ensure we, as API developers, retain some level of control is to make use of the `final` keyword. By making our classes or methods `final`, we are signalling to developers that, at this point in time, they cannot consider extending or overriding these particular classes and methods.
 
-It has to be said that this is not particularly popular for developers, as no one likes being told that they can't do something. Despite this, it is better to err on the side of caution when developing APIs, and if there is not sufficient certainty that the API is right for extension, using the `final` keyword helps to keep some power back for the API developer to improve the situation in the future. The `final` keyword, after all, can always be removed in a subsequent release, but it is not a wise idea to make something `final` after it has already been released.
+The reason why `final` is valuable to developers is due to the fact that sometimes, our APIs are not flawless, and instead of getting in touch to help fix things, many developers want to try to workaround our flaws to patch their version, so that they can move on to the next problem. With this approach, they only create new problems for themselves, and ultimately, for us as API developers. Ideally, when a user of our API encounters a `final` class or method, they reach out to us to discuss their needs, which can lead to an even better API. The `final` keyword, after all, can always be removed in a subsequent release, but it is a wise idea to not make something `final` after it has already been released.
 
 ## Backwards Compatibility
 
@@ -94,7 +153,7 @@ This refcard, up until now, has skirted around the issue of how exactly to evolv
 
 Sometimes we must make backwards incompatible changes, for example if we made a mistake in our API design or if we overlooked some aspect of the requirements that requires a different approach. The challenge is to do this in a way that is clearly communicated to our users, whenever possible. Making use of the `@Deprecated` annotation (and related `@deprecated` JavaDoc tag) is a good first step, but this only works when we have a clearly articulated policy regarding when we permit breaking changes in a release. A common approach to this is to subscribe to the [semantic versioning](https://semver.org/) policy of only making incompatible API changes in major releases (that is, in the versioning scheme MAJOR.MINOR.PATCH, where the MAJOR value is incremented). In this approach, anything that you plan to change or remove is marked as deprecated, but not removed or modified until the next major release. If this policy is to be used, it is important to communicate this outwardly, so that users of your API can be certain of this plan.
 
-On the other side of the coin is the case where there is accidental API breaks, introduced by developers who are unaware of the implications of a change they have made. This happens more often than ideal, and is more often than not very hard to notice. Tools exist to watch API changes, and to notify you of backwards incompatibilities that have been introduced. [Revapi](https://revapi.org/) is one such tool that continues to prove its worth to projects inside of Microsoft.
+On the other side of the coin is the case where there are accidental API breaks, introduced by developers who are unaware of the implications of a change they have made. This happens more often than ideal, and is more often than not very hard to notice. Tools exist to watch API changes, and to notify you of backwards incompatibilities that have been introduced. [Revapi](https://revapi.org/) is one such tool that continues to prove its worth to projects inside of Microsoft.
 
 ## Don't Return null
 
@@ -157,21 +216,6 @@ There are two final rules when it comes to returning an `Optional` in API:
 1. Never return `Optional<Collection<T>>` from a method, as this can be more succinctly represented by simply returning `Collection<T>` with an empty collection (as mentioned earlier in this refcard).
 2. Never, ever return `null` from a method that has a return type of `Optional`!
 
-## Beware of Boxing
-
-Boxing / Unboxing is when Java converts primitives to and from reference types, for example, converting between `int` and `Integer` types. This is often done automatically through the process known as autoboxing. There are three concerns when using reference types:
-
-1. Increased possibility of null pointer exceptions (compared with no possibility with primitives).
-2. Correctness (e.g. the equality operator `==` works differently for `int` and `Integer`).
-3. Performance considerations.
-
-As noted in the [Java Programming Language](https://docs.oracle.com/javase/1.5.0/docs/guide/language/autoboxing.html
-) documentation, the following is stated:
-
->It is not appropriate to use autoboxing and unboxing for scientific computing, or other performance-sensitive numerical code. An Integer is not a substitute for an int; autoboxing and unboxing blur the distinction between primitive types and reference types, but they do not eliminate it.
-
-For these reasons, when we write API it is important that we consider the necessity of any API that returns or accepts reference types, as opposed to primitive types. Whenever possible, reference types should be replaced with primitive types.
-
 ## Functional Interfaces
 
 In Java 8 the `@FunctionalInterface` annotation was introduced, allowing API developers to designate that a particular class is intended for use in lambda expressions. It is not necessary that a class have this annotation, but by having this associated with a class, it enables the compiler to enforce that the class has exactly one abstract method, which is the requirement for supporting lambda expressions.
@@ -196,3 +240,7 @@ Developers can choose to use these functional interfaces in lieu of creating the
 This document has covered an array of considerations that all engineers should have in the back of their mind whenever they are writing code that has any public API. At a high level, readers should put this refcard down with an appreciation for the importance of considered API design. If it wasn't already present, readers should start to sense that there is an art form to API design, and that improving our skills in this area comes about through practice and feedback - from our mentors and from our users. As with many art forms, API design succeeds not by seeing how much can be put in, but by seeing how much can be taken out. The challenge therefore is minimalism, it is consistency, it is intentionalism, and above all, it is consideration - for API, but more importantly, for the end user of the API. We must constantly practice developer empathy to ensure we keep our end users needs sharply in perspective.
 
 Regardless of whether we are writing API for our own consumption, for others in our organization, or more broadly as part of an open source project or commercial library, taking into consideration the values outlined in this refcard will hopefully help to direct readers to a higher quality and more professional outcome. This should not be looked at simply as 'more work', but as a challenge to ourselves, to fixate on the artistic endeavour of making an enjoyable, functional, productive API for our users.
+
+## Acknowledgements
+
+Drafts of this refcard were reviewed by a number of people, and their feedback helped improve this refcard immensely. Thanks to the following people: Abhinay Agarwal, Brian Benz, Bruno Borges, Lukas Eder, Theresa Nguyen, Kevin Rushforth, Eugene Ryzhikov, Johan Vos, and Ruth Yakubu.

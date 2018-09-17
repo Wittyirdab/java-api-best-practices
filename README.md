@@ -84,7 +84,7 @@ As most Java projects are based on Maven or Gradle, generating JavaDocs for a pr
 
 ### JavaDoc for Behavioral Contracts
 
-One underutilised aspect of JavaDoc is to use it to specify behavioral contracts. An example of a behavioral contract is the `Arrays.sort()` method, which guarantees it is 'stable' (that is, equal elements are not reordered). There is no way to easily specify this guarantee as part of the API itself (aside from making our API unwieldy, e.g. `Arrays.stableSort()`), but JavaDoc is an ideal location for this. 
+One underutilised aspect of JavaDoc is to use it to specify behavioral contracts. An example of a behavioral contract is the `Arrays.sort()` method, which guarantees it is 'stable' (that is, equal elements are not reordered). There is no way to easily specify this guarantee as part of the API itself (aside from making our API unwieldy, e.g. `Arrays.stableSort()`), but JavaDoc is an ideal location for this.
 
 However, if we add behavioral contracts as part of our API, this then becomes as much a part of our API as the API itself. We can not change this behavioral contract with the same level of consideration, as it will potentially cause downstream issues for your users.
 
@@ -121,7 +121,7 @@ It is the natural instinct of an API developer to want to write as much API as t
 
 All API developers should start by understanding the critical use cases required for their API, and design their API to support these use cases. They should fight the urge to add more convenience (thinking to themselves that by adding a new method will save developers from writing a few more lines of code).
 
-Having said this, it is important to clarify that convenience APIs serve a critically important role in any good API, especially in servicing our goal of having an understandable API. The challenge is in determining what should be accepted as valuable, and what should be rejected as not having enough value to 'pay for itself'. Examples of good convenience API in the JDK include the new `List.of(..)` API to quickly create an immutable list, or, more simply, `List.add(Object)`, to avoid developers always having to call `List.add(int, Object)`.
+Having said this, it is important to clarify that convenience APIs serve a critically important role in any good API, especially in servicing our goal of having an understandable API. The challenge is in determining what should be accepted as valuable, and what should be rejected as not having enough value to 'pay for itself'. An example of a good convenience API in the JDK is the `List.add(Object)` method, to avoid developers always having to call `List.add(int, Object)`.
 
 When discussing this topic with Stuart Marks, an engineer on the JDK team at Oracle, he provided the following insight:
 

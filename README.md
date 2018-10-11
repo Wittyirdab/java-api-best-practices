@@ -1,6 +1,6 @@
 # Java API Best Practices
 
-> Note: This is a draft text for an upcoming DZone refcard. If you have any feedback, please file an issue or a pull request. The target document size is between 3000 and 4000 words, but at present this document is around about 4750 words. If you have suggestions on the least important content, please let me know.
+> Note: This is a draft text for a [published DZone Refcard](https://dzone.com/refcardz/java-api-best-practices?chapter=1). I recommend that you read that refcard in PDF form to get the latest text, and also the best formatted content.
 
 ## Introduction
 
@@ -27,7 +27,7 @@ Because we expect others to use our APIs, we should put in the effort to documen
 A good API should not surprise its users, and one way we can fail at this is by not being consistent. When we speak of consistency, we mean ensuring that we repeat the same concepts in our API, rather than introduce different concepts in an adhoc fashion. Examples include:
 
 * All of our methods should have the form `getXYZ()` or `xyz()`, but not both forms.
-* If there are two methods (one a conveience overload of the other, e.g. one taking `Object...` (that is, a var-args of `Object`) and the other taking `Collection<? extends Object>`), that overload should be available everywhere.
+* If there are two methods (one a convenience overload of the other, e.g. one taking `Object...` (that is, a var-args of `Object`) and the other taking `Collection<? extends Object>`), that overload should be available everywhere.
 
 The point here is to establish a team-wide vocabulary and 'cheat sheet' that we use to apply a veneer of consistency across our entire SDK.
 
@@ -86,7 +86,7 @@ As most Java projects are based on Maven or Gradle, generating JavaDocs for a pr
 
 One underutilised aspect of JavaDoc is to use it to specify behavioral contracts. An example of a behavioral contract is the `Arrays.sort()` method, which guarantees it is 'stable' (that is, equal elements are not reordered). There is no way to easily specify this guarantee as part of the API itself (aside from making our API unwieldy, e.g. `Arrays.stableSort()`), but JavaDoc is an ideal location for this.
 
-However, if we add behavioral contracts as part of our API, this then becomes as much a part of our API as the API itself. We can not change this behavioral contract with the same level of consideration, as it will potentially cause downstream issues for your users.
+However, if we add behavioral contracts as part of our JavaDoc, this then becomes as much a part of our API as the API itself. We can not change this behavioral contract with the same level of consideration, as it will potentially cause downstream issues for your users.
 
 ### JavaDoc Tags
 
